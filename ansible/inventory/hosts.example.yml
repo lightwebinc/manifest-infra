@@ -1,0 +1,37 @@
+---
+all:
+  children:
+    manifest_nodes:
+      vars:
+        ansible_user: ubuntu
+        shard_bits: 4
+        manifest_scope: site
+        enable_firewall: true
+
+        # Firewall allow-list for SSH / metrics scrape.
+        # MUST be set to your management network(s).
+        mgmt_cidrs_v4:
+          - "10.0.0.0/8"
+        mgmt_cidrs_v6: []
+
+        # NOTE: iface must be set per-host (not here) to override the
+        # group_vars/all.yml default. Ansible gives group_vars/all higher
+        # precedence than inventory group vars.
+
+      hosts:
+        manifest-01:
+          ansible_host: 203.0.113.80
+          ansible_ssh_private_key_file: ~/.ssh/id_ed25519
+          iface: eth0
+          role_hint: proxy
+          joined_groups: "all"
+          generation_id: "00112233445566778899aabbccddeeff"
+          authoritative: true
+
+        manifest-02:
+          ansible_host: 198.51.100.81
+          ansible_user: freebsd
+          ansible_ssh_private_key_file: ~/.ssh/id_ed25519
+          iface: vtnet0
+          role_hint: listener
+          joined_groups: "0,3,5"

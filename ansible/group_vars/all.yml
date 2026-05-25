@@ -1,0 +1,66 @@
+---
+# ============================================================
+# bitcoin-manifest Ansible group_vars/all.yml
+# Override any variable per-host in inventory/hosts.yml
+# ============================================================
+
+# ------------------------------------------------------------
+# bitcoin-shard-manifest source and build
+# ------------------------------------------------------------
+manifest_repo: "https://github.com/lightwebinc/bitcoin-shard-manifest.git"
+manifest_version: "main"
+manifest_install_dir: "/opt/bitcoin-shard-manifest"
+manifest_bin_dir: "/usr/local/bin"
+manifest_user: "bitcoin-manifest"
+manifest_group: "bitcoin-manifest"
+
+# Pre-built local binary (skips git/build when set)
+# manifest_local_binary: "/path/to/local/bitcoin-shard-manifest"
+
+# Force rebuild even when binary exists
+manifest_force_build: false
+
+# Go toolchain (used when building from source)
+go_version: "1.25.10"
+go_install_dir: "/usr/local/go"
+
+# ------------------------------------------------------------
+# Manifest content (BRC-137)
+# ------------------------------------------------------------
+shard_bits: 0                           # 0..12; MUST match the rest of the network
+joined_groups: ""                       # comma list of indices (hex/dec), or "all", or empty
+manifest_encoding: "auto"               # auto | list | bitmap
+role_hint: "generic"                    # generic | proxy | listener | retry-endpoint | producer | manifest-only
+generation_id: ""                       # 16-byte hex; bump whenever shard_bits changes
+authoritative: false                    # set Flags.Authoritative on the wire
+instance_id: ""                         # OTel service.instance.id; empty = hostname
+
+# ------------------------------------------------------------
+# Network
+# ------------------------------------------------------------
+iface: ""                               # egress interface; empty = first non-loopback global IPv6 iface
+manifest_port: 9001                     # UDP destination port on the beacon group
+manifest_scope: "site"                  # comma list: link, site, org, global
+mc_group_id: "0x000B"                   # IANA group-id (default 0x000B = IANA Bitcoin)
+
+# ------------------------------------------------------------
+# Cadence
+# ------------------------------------------------------------
+announce_interval: "300s"               # send period
+ttl: "0s"                               # 0 = consumer default (3 × interval)
+
+# ------------------------------------------------------------
+# Observability
+# ------------------------------------------------------------
+metrics_addr: "[::]:9091"               # /metrics, /healthz, /readyz HTTP listener
+metrics_port: 9091                      # MUST match the port in metrics_addr (used by firewall rules)
+otlp_endpoint: ""                       # OTLP gRPC endpoint; empty disables push
+otlp_interval: "15s"
+manifest_debug: false
+
+# ------------------------------------------------------------
+# Firewall perimeter
+# ------------------------------------------------------------
+enable_firewall: true
+mgmt_cidrs_v4: []                       # SSH / metrics scrape allow-list (IPv4). MUST be set per deployment.
+mgmt_cidrs_v6: []                       # SSH / metrics scrape allow-list (IPv6).

@@ -1,0 +1,33 @@
+[Unit]
+Description=Bitcoin Shard Manifest Announcement Daemon
+Documentation=https://github.com/lightwebinc/bitcoin-shard-manifest
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User={{ manifest_user }}
+Group={{ manifest_group }}
+EnvironmentFile=/etc/bitcoin-shard-manifest/config.env
+ExecStart={{ manifest_bin_dir }}/bitcoin-shard-manifest
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=15
+LimitNOFILE=4096
+
+# Hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX AF_NETLINK
+CapabilityBoundingSet=
+AmbientCapabilities=
+SystemCallArchitectures=native
+LockPersonality=true
+
+[Install]
+WantedBy=multi-user.target

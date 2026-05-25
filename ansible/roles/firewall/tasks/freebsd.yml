@@ -1,0 +1,37 @@
+---
+- name: Enable pf at boot
+  ansible.builtin.lineinfile:
+    path: /etc/rc.conf
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    create: true
+    mode: "0644"
+  loop:
+    - { regexp: '^pf_enable=', line: 'pf_enable="YES"' }
+    - { regexp: '^pflog_enable=', line: 'pflog_enable="YES"' }
+
+- name: Deploy bitcoin-shard-manifest pf anchor
+  ansible.builtin.template:
+    src: bitcoin-shard-manifest.pf.conf.j2
+    dest: /etc/pf.anchors/bitcoin-shard-manifest
+    owner: root
+    group: wheel
+    mode: "0644"
+  notify: Reload pf
+
+- name: Ensure /etc/pf.conf references the manifest anchor
+  ansible.builtin.blockinfile:
+    path: /etc/pf.conf
+    create: true
+    mode: "0644"
+    marker: "# {mark} bitcoin-shard-manifest anchor"
+    block: |
+      anchor "bitcoin-shard-manifest"
+      load anchor "bitcoin-shard-manifest" from "/etc/pf.anchors/bitcoin-shard-manifest"
+  notify: Reload pf
+
+- name: Enable pf service
+  ansible.builtin.service:
+    name: pf
+    enabled: true
+    state: started

@@ -1,0 +1,74 @@
+#!/bin/sh
+#
+# PROVIDE: bitcoin_shard_manifest
+# REQUIRE: NETWORKING DAEMON
+# KEYWORD: shutdown
+#
+# Managed by Ansible — do not edit manually
+#
+# Add the following to /etc/rc.conf to enable:
+#   bitcoin_shard_manifest_enable="YES"
+
+. /etc/rc.subr
+
+name="bitcoin_shard_manifest"
+rcvar="bitcoin_shard_manifest_enable"
+desc="Bitcoin Shard Manifest Announcement Daemon"
+
+load_rc_config "${name}"
+
+: ${bitcoin_shard_manifest_enable:="NO"}
+: ${bitcoin_shard_manifest_user:="{{ manifest_user }}"}
+: ${bitcoin_shard_manifest_group:="{{ manifest_group }}"}
+: ${bitcoin_shard_manifest_config:="/usr/local/etc/bitcoin-shard-manifest.conf"}
+: ${bitcoin_shard_manifest_logfile:="/var/log/bitcoin_shard_manifest.log"}
+: ${bitcoin_shard_manifest_pidfile:="/var/run/bitcoin_shard_manifest.pid"}
+
+pidfile="${bitcoin_shard_manifest_pidfile}"
+command="{{ manifest_bin_dir }}/bitcoin-shard-manifest"
+command_args=""
+
+start_precmd="bitcoin_shard_manifest_prestart"
+start_cmd="bitcoin_shard_manifest_start"
+stop_cmd="bitcoin_shard_manifest_stop"
+status_cmd="bitcoin_shard_manifest_status"
+
+bitcoin_shard_manifest_prestart()
+{
+    if [ -f "${bitcoin_shard_manifest_config}" ]; then
+        . "${bitcoin_shard_manifest_config}"
+    fi
+    export SHARD_BITS JOINED_GROUPS BITMAP ROLE_HINT GENERATION_ID AUTHORITATIVE
+    export INSTANCE_ID IFACE PORT MANIFEST_SCOPE MC_GROUP_ID
+    export ANNOUNCE_INTERVAL TTL METRICS_ADDR OTLP_ENDPOINT OTLP_INTERVAL DEBUG
+}
+
+bitcoin_shard_manifest_start()
+{
+    bitcoin_shard_manifest_prestart
+    /usr/sbin/daemon -f -p "${pidfile}" -u "${bitcoin_shard_manifest_user}" \
+        ${command} >> "${bitcoin_shard_manifest_logfile}" 2>&1
+    echo "bitcoin_shard_manifest started."
+}
+
+bitcoin_shard_manifest_stop()
+{
+    if [ -f "${pidfile}" ]; then
+        kill -TERM $(cat "${pidfile}") && rm -f "${pidfile}"
+        echo "bitcoin_shard_manifest stopped."
+    else
+        echo "bitcoin_shard_manifest is not running."
+    fi
+}
+
+bitcoin_shard_manifest_status()
+{
+    if [ -f "${pidfile}" ] && kill -0 $(cat "${pidfile}") 2>/dev/null; then
+        echo "bitcoin_shard_manifest is running (pid $(cat ${pidfile}))."
+    else
+        echo "bitcoin_shard_manifest is not running."
+        return 1
+    fi
+}
+
+run_rc_command "$1"

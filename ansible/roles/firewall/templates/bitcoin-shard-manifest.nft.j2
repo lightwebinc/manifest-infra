@@ -1,0 +1,89 @@
+{# nftables ruleset for bitcoin-shard-manifest
+   Managed by Ansible — do not edit manually.
+
+   Perimeter model:
+   * UDP egress to IPv6 multicast scopes (ff05::/16, ff08::/16, ff0e::/16) on
+     {{ manifest_port }} for the announcement traffic.
+   * TCP ingress for Prometheus metrics scrape from operator CIDRs.
+   * SSH ingress from operator CIDRs.
+   * Standard ICMPv6 and DHCPv6/SLAAC.
+   * Forwarding: disabled.
+#}
+table inet bitcoin-shard-manifest {
+
+    set mgmt_v4 {
+        type ipv4_addr
+        flags interval
+        elements = { {{ mgmt_cidrs_v4 | join(', ') if mgmt_cidrs_v4 | length > 0 else '0.0.0.0/0' }} }
+    }
+
+    set mgmt_v6 {
+        type ipv6_addr
+        flags interval
+        elements = { {{ mgmt_cidrs_v6 | join(', ') if mgmt_cidrs_v6 | length > 0 else '::/0' }} }
+    }
+
+    chain input {
+        type filter hook input priority 0; policy drop;
+
+        ct state established,related accept
+        ct state invalid drop
+        iifname "lo" accept
+
+        ip protocol icmp accept
+        meta l4proto ipv6-icmp icmpv6 type {
+            nd-neighbor-solicit, nd-neighbor-advert,
+            nd-router-solicit, nd-router-advert,
+            mld-listener-query, mld-listener-report,
+            mld-listener-done, mld2-listener-report,
+            echo-request, echo-reply,
+            packet-too-big, parameter-problem, time-exceeded
+        } accept
+
+        # SSH from operator CIDRs.
+        ip saddr @mgmt_v4 tcp dport 22 accept
+        ip6 saddr @mgmt_v6 tcp dport 22 accept
+
+        # Prometheus metrics scrape (TCP port {{ metrics_port }}) from operator CIDRs.
+        ip saddr @mgmt_v4 tcp dport {{ metrics_port }} accept
+        ip6 saddr @mgmt_v6 tcp dport {{ metrics_port }} accept
+
+        # DHCPv6 client port (in case the host uses DHCPv6).
+        udp dport 546 accept
+    }
+
+    chain output {
+        type filter hook output priority 0; policy drop;
+
+        ct state established,related accept
+        oifname "lo" accept
+
+        ip protocol icmp accept
+        meta l4proto ipv6-icmp accept
+
+        # IPv6 multicast manifest announcements.
+        ip6 daddr ff05::/16 udp dport {{ manifest_port }} accept
+        ip6 daddr ff08::/16 udp dport {{ manifest_port }} accept
+        ip6 daddr ff0e::/16 udp dport {{ manifest_port }} accept
+
+        # NDP / DHCPv6 / DNS / NTP / SSH / package mirrors / OTLP.
+        udp dport 547 accept
+        udp dport 53 accept
+        tcp dport 53 accept
+        udp dport 123 accept
+        tcp dport { 22, 80, 443 } accept
+
+        # Outbound replies for metrics scrape.
+        ip saddr 0.0.0.0/0 tcp sport {{ metrics_port }} accept
+        ip6 saddr ::/0 tcp sport {{ metrics_port }} accept
+
+        # OTLP gRPC export (if configured).
+{% if otlp_endpoint | default('') | length > 0 %}
+        tcp dport { 4317, 4318 } accept
+{% endif %}
+    }
+
+    chain forward {
+        type filter hook forward priority 0; policy drop;
+    }
+}

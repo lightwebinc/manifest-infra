@@ -1,0 +1,3 @@
+---
+- name: Apply OS-specific firewall ruleset
+  ansible.builtin.include_tasks: "{{ 'freebsd.yml' if ansible_os_family == 'FreeBSD' else 'linux.yml' }}"

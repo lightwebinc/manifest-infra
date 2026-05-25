@@ -1,0 +1,162 @@
+---
+- name: Create manifest system group
+  ansible.builtin.group:
+    name: "{{ manifest_group }}"
+    system: true
+    state: present
+
+- name: Create manifest system user
+  ansible.builtin.user:
+    name: "{{ manifest_user }}"
+    group: "{{ manifest_group }}"
+    system: true
+    shell: /usr/sbin/nologin
+    home: "{{ manifest_install_dir }}"
+    create_home: false
+    state: present
+
+- name: Create manifest install directory
+  ansible.builtin.file:
+    path: "{{ manifest_install_dir }}"
+    state: directory
+    owner: "{{ manifest_user }}"
+    group: "{{ manifest_group }}"
+    mode: "0755"
+
+- name: Mark install directory as git safe.directory
+  ansible.builtin.shell: |
+    git config --global --add safe.directory {{ manifest_install_dir | quote }}
+  changed_when: false
+  when: manifest_local_binary | default('') | length == 0
+
+- name: Clone or update bitcoin-shard-manifest repository
+  ansible.builtin.shell: |
+    set -eu
+    if [ ! -d "{{ manifest_install_dir }}/.git" ]; then
+      git clone {{ manifest_repo | quote }} {{ manifest_install_dir | quote }}
+    fi
+    cd {{ manifest_install_dir | quote }}
+    git fetch --all --tags --prune
+    git checkout {{ manifest_version | quote }}
+    git pull --ff-only || true
+  args:
+    executable: /bin/bash
+  register: manifest_clone
+  changed_when: "'Already up to date' not in manifest_clone.stdout"
+  when: manifest_local_binary | default('') | length == 0
+
+- name: Push pre-built manifest binary (skips git/build)
+  ansible.builtin.copy:
+    src: "{{ manifest_local_binary }}"
+    dest: "{{ manifest_install_dir }}/bitcoin-shard-manifest"
+    owner: "{{ manifest_user }}"
+    group: "{{ manifest_group }}"
+    mode: "0755"
+  when: manifest_local_binary | default('') | length > 0
+
+- name: Set ownership of install directory after clone
+  ansible.builtin.file:
+    path: "{{ manifest_install_dir }}"
+    owner: "{{ manifest_user }}"
+    group: "{{ manifest_group }}"
+    recurse: true
+  when: manifest_local_binary | default('') | length == 0
+
+- name: Stat existing manifest binary in install dir
+  ansible.builtin.stat:
+    path: "{{ manifest_install_dir }}/bitcoin-shard-manifest"
+  register: manifest_binary_stat
+  when: manifest_local_binary | default('') | length == 0
+
+- name: Build bitcoin-shard-manifest binary
+  ansible.builtin.command:
+    cmd: "{{ go_install_dir }}/bin/go build -buildvcs=false -o {{ manifest_install_dir }}/bitcoin-shard-manifest ."
+    chdir: "{{ manifest_install_dir }}"
+  environment:
+    PATH: "{{ go_install_dir }}/bin:{{ ansible_env.PATH }}"
+    CGO_ENABLED: "0"
+    GOOS: "{{ 'freebsd' if ansible_os_family == 'FreeBSD' else 'linux' }}"
+    GOARCH: "{{ 'arm64' if ansible_architecture == 'aarch64' else 'amd64' }}"
+    HOME: "/tmp"
+    GOPATH: "/tmp/gopath"
+    GOCACHE: "/tmp/gocache"
+  changed_when: true
+  when:
+    - manifest_local_binary | default('') | length == 0
+    - not manifest_binary_stat.stat.exists or (manifest_force_build | default(false) | bool)
+
+- name: Set ownership on built/pushed binary
+  ansible.builtin.file:
+    path: "{{ manifest_install_dir }}/bitcoin-shard-manifest"
+    owner: "{{ manifest_user }}"
+    group: "{{ manifest_group }}"
+    mode: "0755"
+
+- name: Install binary to system bin dir
+  ansible.builtin.copy:
+    src: "{{ manifest_install_dir }}/bitcoin-shard-manifest"
+    dest: "{{ manifest_bin_dir }}/bitcoin-shard-manifest"
+    remote_src: true
+    owner: root
+    group: "{{ manifest_group }}"
+    mode: "0755"
+  notify: Restart bitcoin-shard-manifest
+
+- name: Create config directory
+  ansible.builtin.file:
+    path: "{{ '/usr/local/etc' if ansible_os_family == 'FreeBSD' else '/etc/bitcoin-shard-manifest' }}"
+    state: directory
+    owner: root
+    group: "{{ manifest_group }}"
+    mode: "0750"
+
+- name: Deploy environment config file
+  ansible.builtin.template:
+    src: config.env.j2
+    dest: "{{ '/usr/local/etc/bitcoin-shard-manifest.conf' if ansible_os_family == 'FreeBSD' else '/etc/bitcoin-shard-manifest/config.env' }}"
+    owner: root
+    group: "{{ manifest_group }}"
+    mode: "0640"
+  notify: Restart bitcoin-shard-manifest
+
+- name: Deploy systemd service unit (Linux)
+  ansible.builtin.template:
+    src: bitcoin-shard-manifest.service.j2
+    dest: /etc/systemd/system/bitcoin-shard-manifest.service
+    owner: root
+    group: root
+    mode: "0644"
+  when: ansible_os_family != 'FreeBSD'
+  notify:
+    - Reload systemd
+    - Restart bitcoin-shard-manifest
+
+- name: Deploy rc.d service script (FreeBSD)
+  ansible.builtin.template:
+    src: bitcoin_shard_manifest.rc.j2
+    dest: /usr/local/etc/rc.d/bitcoin_shard_manifest
+    owner: root
+    group: wheel
+    mode: "0755"
+  when: ansible_os_family == 'FreeBSD'
+  notify: Restart bitcoin-shard-manifest
+
+- name: Enable and start bitcoin-shard-manifest (Linux)
+  ansible.builtin.systemd:
+    name: bitcoin-shard-manifest
+    enabled: true
+    state: started
+  when: ansible_os_family != 'FreeBSD'
+
+- name: Enable bitcoin-shard-manifest in rc.conf (FreeBSD)
+  ansible.builtin.lineinfile:
+    path: /etc/rc.conf
+    regexp: '^bitcoin_shard_manifest_enable='
+    line: 'bitcoin_shard_manifest_enable="YES"'
+  when: ansible_os_family == 'FreeBSD'
+
+- name: Start bitcoin-shard-manifest (FreeBSD)
+  ansible.builtin.service:
+    name: bitcoin_shard_manifest
+    state: started
+  when: ansible_os_family == 'FreeBSD'

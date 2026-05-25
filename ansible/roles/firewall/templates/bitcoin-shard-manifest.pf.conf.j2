@@ -1,0 +1,32 @@
+{# pf anchor ruleset for bitcoin-shard-manifest (FreeBSD)
+   Managed by Ansible — do not edit manually.
+#}
+mgmt_v4 = "{ {{ mgmt_cidrs_v4 | join(', ') if mgmt_cidrs_v4 | length > 0 else '0.0.0.0/0' }} }"
+mgmt_v6 = "{ {{ mgmt_cidrs_v6 | join(', ') if mgmt_cidrs_v6 | length > 0 else '::/0' }} }"
+
+set skip on lo
+
+block all
+
+# State for established sessions.
+pass in quick proto tcp from $mgmt_v4 to any port 22 keep state
+pass in quick proto tcp from $mgmt_v6 to any port 22 keep state
+pass in quick proto tcp from $mgmt_v4 to any port {{ metrics_port }} keep state
+pass in quick proto tcp from $mgmt_v6 to any port {{ metrics_port }} keep state
+
+# ICMP / NDP / MLD.
+pass quick proto icmp keep state
+pass quick proto ipv6-icmp keep state
+
+# UDP egress to IPv6 multicast scopes for the manifest announcement.
+pass out quick inet6 proto udp to ff05::/16 port {{ manifest_port }}
+pass out quick inet6 proto udp to ff08::/16 port {{ manifest_port }}
+pass out quick inet6 proto udp to ff0e::/16 port {{ manifest_port }}
+
+# Standard outbound (DNS / NTP / SSH / HTTPS).
+pass out quick proto udp to any port { 53, 67, 68, 123, 546, 547 } keep state
+pass out quick proto tcp to any port { 22, 53, 80, 443 } keep state
+
+{% if otlp_endpoint | default('') | length > 0 %}
+pass out quick proto tcp to any port { 4317, 4318 } keep state
+{% endif %}
