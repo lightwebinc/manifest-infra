@@ -24,10 +24,11 @@
     mode: "0755"
 
 - name: Mark install directory as git safe.directory
-  ansible.builtin.shell: |
-    git config --global --add safe.directory {{ manifest_install_dir | quote }}
+  ansible.builtin.command:
+    cmd: git config --global --add safe.directory {{ manifest_install_dir }}
   changed_when: false
   when: manifest_local_binary | default('') | length == 0
+  tags: [skip_ansible_lint]
 
 - name: Clone or update bitcoin-shard-manifest repository
   ansible.builtin.shell: |
