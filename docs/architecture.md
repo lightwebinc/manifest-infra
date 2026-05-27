@@ -1,6 +1,6 @@
 # Architecture
 
-`bitcoin-manifest` deploys [`bitcoin-shard-manifest`](https://github.com/lightwebinc/bitcoin-shard-manifest)
+`manifest-infra` deploys [`shard-manifest`](https://github.com/lightwebinc/shard-manifest)
 to one or more hosts. Each host runs the daemon as an unprivileged systemd
 (or rc.d) service and periodically emits BRC-137 ShardManifest datagrams to
 the IPv6 multicast beacon group.
@@ -13,7 +13,7 @@ the IPv6 multicast beacon group.
 |                                                            |
 |  +-----------------------+    +-----------------------+    |
 |  | systemd / rc.d        |    | nftables / pf         |    |
-|  | bitcoin-shard-manifest|    | (perimeter firewall)  |    |
+|  | shard-manifest|    | (perimeter firewall)  |    |
 |  +-----------+-----------+    +-----------------------+    |
 |              |                                             |
 |              | UDP egress (multicast)                      |
@@ -34,25 +34,25 @@ the IPv6 multicast beacon group.
 - Installs Go toolchain (`/usr/local/go`), build dependencies (`build-essential`, `git`, `acl`, `curl`, `tar`, `ca-certificates` on Debian; the FreeBSD equivalents under FreeBSD).
 - Provides an opt-in OS package upgrade task tagged `os_update` (skipped by default).
 
-### `bitcoin-shard-manifest`
-- Creates the `bitcoin-manifest` system user/group.
-- Clones (or fetches) the daemon source into `/opt/bitcoin-shard-manifest`.
+### `shard-manifest`
+- Creates the `manifest-infra` system user/group.
+- Clones (or fetches) the daemon source into `/opt/shard-manifest`.
 - Builds with `go build -buildvcs=false` for the host's GOOS/GOARCH (or
   installs a pre-built binary via `manifest_local_binary`).
-- Renders `/etc/bitcoin-shard-manifest/config.env` (Linux) or
-  `/usr/local/etc/bitcoin-shard-manifest.conf` (FreeBSD) from the deployment
+- Renders `/etc/shard-manifest/config.env` (Linux) or
+  `/usr/local/etc/shard-manifest.conf` (FreeBSD) from the deployment
   variables.
 - Installs and enables the systemd unit (Linux) or rc.d script (FreeBSD)
   with hardening (`NoNewPrivileges`, `ProtectSystem=strict`,
   `RestrictAddressFamilies`, empty `CapabilityBoundingSet`).
 
 ### `firewall` (optional, default on)
-- Linux: nftables ruleset under `inet bitcoin-shard-manifest` allowing
+- Linux: nftables ruleset under `inet shard-manifest` allowing
   - UDP egress to `ff05::/16`, `ff08::/16`, `ff0e::/16` on the manifest port,
   - SSH + Prometheus scrape from `mgmt_cidrs_*`,
   - Standard ICMPv6, NDP, MLD, DHCPv6, DNS, NTP, HTTPS,
   - OTLP gRPC/HTTP egress when `otlp_endpoint` is set.
-- FreeBSD: equivalent pf anchor under `bitcoin-shard-manifest`.
+- FreeBSD: equivalent pf anchor under `shard-manifest`.
 
 ## Failure model
 

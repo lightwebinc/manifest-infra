@@ -1,4 +1,4 @@
-{# nftables ruleset for bitcoin-shard-manifest
+{# nftables ruleset for shard-manifest
    Managed by Ansible — do not edit manually.
 
    Perimeter model:
@@ -9,7 +9,7 @@
    * Standard ICMPv6 and DHCPv6/SLAAC.
    * Forwarding: disabled.
 #}
-table inet bitcoin-shard-manifest {
+table inet shard-manifest {
 
     set mgmt_v4 {
         type ipv4_addr

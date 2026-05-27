@@ -3,7 +3,7 @@
 The playbook ships three roles applied to the `manifest_nodes` group:
 
 1. `common` — packages + Go toolchain.
-2. `bitcoin-shard-manifest` — daemon install, config render, service unit.
+2. `shard-manifest` — daemon install, config render, service unit.
 3. `firewall` — perimeter ruleset (Linux nftables, FreeBSD pf).
 
 Run it with:
@@ -78,7 +78,7 @@ group_vars/all (e.g. `iface`, `role_hint`).
 ## Pushing a pre-built binary (skip git/build)
 
 ```yaml
-manifest_local_binary: "/path/to/local/bitcoin-shard-manifest"
+manifest_local_binary: "/path/to/local/shard-manifest"
 ```
 
 When set, the role copies the binary in place of cloning + building. Useful

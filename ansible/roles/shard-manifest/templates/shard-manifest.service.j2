@@ -1,6 +1,6 @@
 [Unit]
 Description=Bitcoin Shard Manifest Announcement Daemon
-Documentation=https://github.com/lightwebinc/bitcoin-shard-manifest
+Documentation=https://github.com/lightwebinc/shard-manifest
 After=network-online.target
 Wants=network-online.target
 
@@ -8,8 +8,8 @@ Wants=network-online.target
 Type=simple
 User={{ manifest_user }}
 Group={{ manifest_group }}
-EnvironmentFile=/etc/bitcoin-shard-manifest/config.env
-ExecStart={{ manifest_bin_dir }}/bitcoin-shard-manifest
+EnvironmentFile=/etc/shard-manifest/config.env
+ExecStart={{ manifest_bin_dir }}/shard-manifest
 Restart=on-failure
 RestartSec=5
 TimeoutStopSec=15

@@ -1,10 +1,10 @@
-# bitcoin-manifest
+# manifest-infra
 
-Deployment automation for [`bitcoin-shard-manifest`](https://github.com/lightwebinc/bitcoin-shard-manifest)
+Deployment automation for [`shard-manifest`](https://github.com/lightwebinc/shard-manifest)
 nodes — the BRC-137 Shard Manifest Announcement Daemon.
 
 This repository is the VM-side counterpart to
-[`bitcoin-shard-manifest-helm`](https://github.com/lightwebinc/bitcoin-shard-manifest-helm)
+[`shard-manifest-helm`](https://github.com/lightwebinc/shard-manifest-helm)
 (the Kubernetes chart). It contains:
 
 - An **Ansible** playbook + roles to install and configure the daemon on
@@ -46,7 +46,7 @@ See [`docs/ansible.md`](docs/ansible.md) for variable reference and
 │   └── roles/
 │       ├── common/                       # base packages + Go toolchain
 │       ├── firewall/                     # nftables (Linux) + pf (FreeBSD)
-│       └── bitcoin-shard-manifest/       # daemon install + systemd / rc.d
+│       └── shard-manifest/       # daemon install + systemd / rc.d
 ├── docs/
 │   ├── architecture.md
 │   ├── ansible.md

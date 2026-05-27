@@ -1,6 +1,6 @@
 # Ubuntu 24.04 deployment notes
 
-`bitcoin-shard-manifest` runs as a stock systemd service under Ubuntu 24.04.
+`shard-manifest` runs as a stock systemd service under Ubuntu 24.04.
 
 ## Prerequisites
 
@@ -20,8 +20,8 @@ ansible-playbook -i ansible/inventory/hosts.yml ansible/site.yml
 After the play completes:
 
 ```bash
-systemctl status bitcoin-shard-manifest
-journalctl -u bitcoin-shard-manifest -n 50
+systemctl status shard-manifest
+journalctl -u shard-manifest -n 50
 curl -s http://[::1]:9091/healthz
 curl -s http://[::1]:9091/readyz
 curl -s http://[::1]:9091/metrics | grep '^bsm_'

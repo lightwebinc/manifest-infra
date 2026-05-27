@@ -1,5 +1,5 @@
 ---
-- name: Deploy bitcoin-shard-manifest nodes
+- name: Deploy shard-manifest nodes
   hosts: manifest_nodes
   become: true
   gather_facts: true
@@ -8,7 +8,7 @@
     - role: common
       tags: [common]
 
-    - role: bitcoin-shard-manifest
+    - role: shard-manifest
       tags: [manifest]
 
     - role: firewall

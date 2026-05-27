@@ -1,6 +1,6 @@
 # Networking
 
-`bitcoin-shard-manifest` requires only outbound IPv6 multicast egress and
+`shard-manifest` requires only outbound IPv6 multicast egress and
 inbound TCP for Prometheus scraping.
 
 ## Egress

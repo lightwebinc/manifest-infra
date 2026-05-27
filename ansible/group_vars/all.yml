@@ -1,21 +1,21 @@
 ---
 # ============================================================
-# bitcoin-manifest Ansible group_vars/all.yml
+# manifest-infra Ansible group_vars/all.yml
 # Override any variable per-host in inventory/hosts.yml
 # ============================================================
 
 # ------------------------------------------------------------
-# bitcoin-shard-manifest source and build
+# shard-manifest source and build
 # ------------------------------------------------------------
-manifest_repo: "https://github.com/lightwebinc/bitcoin-shard-manifest.git"
+manifest_repo: "https://github.com/lightwebinc/shard-manifest.git"
 manifest_version: "main"
-manifest_install_dir: "/opt/bitcoin-shard-manifest"
+manifest_install_dir: "/opt/shard-manifest"
 manifest_bin_dir: "/usr/local/bin"
-manifest_user: "bitcoin-manifest"
-manifest_group: "bitcoin-manifest"
+manifest_user: "manifest-infra"
+manifest_group: "manifest-infra"
 
 # Pre-built local binary (skips git/build when set)
-# manifest_local_binary: "/path/to/local/bitcoin-shard-manifest"
+# manifest_local_binary: "/path/to/local/shard-manifest"
 
 # Force rebuild even when binary exists
 manifest_force_build: false

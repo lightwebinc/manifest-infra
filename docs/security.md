@@ -4,7 +4,7 @@
 
 The systemd unit applies:
 
-- `User=` / `Group=` — runs as `bitcoin-manifest` (system user, nologin shell).
+- `User=` / `Group=` — runs as `manifest-infra` (system user, nologin shell).
 - `NoNewPrivileges=true`
 - `PrivateTmp=true`
 - `ProtectSystem=strict`

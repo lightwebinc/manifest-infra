@@ -4,7 +4,7 @@
     daemon_reload: true
   when: ansible_os_family != 'FreeBSD'
 
-- name: Restart bitcoin-shard-manifest
+- name: Restart shard-manifest
   ansible.builtin.service:
-    name: "{{ 'bitcoin-shard-manifest' if ansible_os_family != 'FreeBSD' else 'bitcoin_shard_manifest' }}"
+    name: "{{ 'shard-manifest' if ansible_os_family != 'FreeBSD' else 'shard_manifest' }}"
     state: restarted

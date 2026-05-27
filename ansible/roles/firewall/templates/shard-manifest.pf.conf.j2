@@ -1,4 +1,4 @@
-{# pf anchor ruleset for bitcoin-shard-manifest (FreeBSD)
+{# pf anchor ruleset for shard-manifest (FreeBSD)
    Managed by Ansible — do not edit manually.
 #}
 mgmt_v4 = "{ {{ mgmt_cidrs_v4 | join(', ') if mgmt_cidrs_v4 | length > 0 else '0.0.0.0/0' }} }"
