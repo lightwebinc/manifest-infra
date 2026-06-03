@@ -57,6 +57,10 @@ metrics_port: 9091                      # MUST match the port in metrics_addr (u
 otlp_endpoint: ""                       # OTLP gRPC endpoint; empty disables push
 otlp_interval: "15s"
 manifest_debug: false
+# Unified logging — see bsv-multicast/docs/UnifiedLogging/unified-logging-plan.md
+log_format: "json"                      # text | json (json default for this daemon)
+log_level: "info"                       # debug|info|warn|error; runtime-togglable via POST /loglevel + SIGHUP
+trace_sampling: 0                       # 0..1 trace head sampling (0 = off; exports via otlp_endpoint)
 
 # ------------------------------------------------------------
 # Firewall perimeter
