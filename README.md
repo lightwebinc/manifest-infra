@@ -3,7 +3,7 @@
 > Part of the [**BSV Layered Multicast**](https://github.com/lightwebinc/bsv-multicast) open-source project — see the main repository for the full architecture, design docs, and BRC specifications.
 
 Deployment automation for [`shard-manifest`](https://github.com/lightwebinc/shard-manifest)
-nodes — the BRC-137 Shard Manifest Announcement Daemon.
+nodes — the BRC-139 Shard Manifest Announcement Daemon.
 
 This repository is the VM-side counterpart to
 [`shard-manifest-helm`](https://github.com/lightwebinc/shard-manifest-helm)

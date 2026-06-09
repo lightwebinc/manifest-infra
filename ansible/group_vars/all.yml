@@ -25,7 +25,7 @@ go_version: "1.25.10"
 go_install_dir: "/usr/local/go"
 
 # ------------------------------------------------------------
-# Manifest content (BRC-137)
+# Manifest content (BRC-139)
 # ------------------------------------------------------------
 shard_bits: 0                           # 0..12; MUST match the rest of the network
 joined_groups: ""                       # comma list of indices (hex/dec), or "all", or empty

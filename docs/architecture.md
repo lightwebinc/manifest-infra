@@ -2,7 +2,7 @@
 
 `manifest-infra` deploys [`shard-manifest`](https://github.com/lightwebinc/shard-manifest)
 to one or more hosts. Each host runs the daemon as an unprivileged systemd
-(or rc.d) service and periodically emits BRC-137 ShardManifest datagrams to
+(or rc.d) service and periodically emits BRC-139 ShardManifest datagrams to
 the IPv6 multicast beacon group.
 
 ## Per-host deployment

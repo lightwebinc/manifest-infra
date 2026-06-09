@@ -28,7 +28,7 @@ Only Prometheus scraping needs reachability. The default `metrics_addr`
 binds `[::]:9091`. The firewall role allows TCP port 9091 from
 `mgmt_cidrs_v4` / `mgmt_cidrs_v6`.
 
-There is no NACK / ACK / response traffic for BRC-137; manifests are pure
+There is no NACK / ACK / response traffic for BRC-139; manifests are pure
 fire-and-forget multicast.
 
 ## Multicast routing notes
@@ -43,7 +43,7 @@ fire-and-forget multicast.
 
 ## Coexistence with BRC-126 ADVERT
 
-BRC-126 retry-endpoint ADVERTs (MsgType `0x20`) and BRC-137 ShardManifests
+BRC-126 retry-endpoint ADVERTs (MsgType `0x20`) and BRC-139 ShardManifests
 (MsgType `0x40`) share the beacon group. Listeners on the beacon group
 distinguish them by `buf[6]`. There is no port conflict and no risk of
 delivery interference.

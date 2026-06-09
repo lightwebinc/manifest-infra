@@ -45,7 +45,7 @@ Set `authoritative: true` on a small operator-curated set of manifest
 emitters (typically tied to your orchestration source-of-truth). Operators
 SHOULD treat non-authoritative manifests as observational only and rely on
 the authoritative set when (in future revisions) automated shard-bit
-shifts are enabled. See [BRC-137 Safety Guidance](https://github.com/lightwebinc/bsv-multicast/blob/main/docs/brc-137-shard-manifest.md#safety-guidance-non-normative).
+shifts are enabled. See [BRC-139 Safety Guidance](https://github.com/lightwebinc/bsv-multicast/blob/main/docs/brc-139-shard-manifest.md#safety-guidance-non-normative).
 
 ## Identity
 
