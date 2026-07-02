@@ -52,6 +52,29 @@ commonly overridden ones are summarised below.
 | `manifest_scope`  | `site`      | Comma list of `link,site,org,global`.       |
 | `mc_group_id`     | `0x000B`    | IANA group-id (BRC-129).                    |
 
+### SSM data-plane advertisement
+
+| Variable                      | Default | Notes                                                                    |
+| ----------------------------- | ------- | ------------------------------------------------------------------------ |
+| `manifest_source_mode`        | `asm`   | `asm`/`ssm`. `ssm` REQUIRES `manifest_publishers` to be non-empty.       |
+| `manifest_publishers`         | `""`    | Comma list of data-plane publisher IPv6 addresses or DNS names (SSM Sources payload). |
+| `manifest_publishers_refresh` | `30s`   | DNS re-resolve interval for `manifest_publishers` entries; must be `> 0`. |
+
+### Generation rollover (Successor block)
+
+Leave `manifest_successor_generation_id` empty to disable. When set,
+`manifest_successor_transition_epoch` is REQUIRED and must be at least
+`now + 2 × announce_interval`. `manifest_successor_shard_bits` must differ from
+`shard_bits` by ±1. The successor env vars are only rendered into `config.env`
+when `manifest_successor_generation_id` is non-empty.
+
+| Variable                              | Default | Notes                                                              |
+| ------------------------------------- | ------- | ------------------------------------------------------------------ |
+| `manifest_successor_generation_id`    | `""`    | Incoming generation 16-byte hex; empty = no Successor block.       |
+| `manifest_successor_shard_bits`       | `0`     | Incoming generation shard bits; must differ from `shard_bits` by ±1. |
+| `manifest_successor_source_mode`      | `""`    | Incoming addressing model `asm`/`ssm`; empty = inherit `manifest_source_mode`. |
+| `manifest_successor_transition_epoch` | `0`     | Unix seconds at which the successor becomes the sole active generation. |
+
 ### Observability
 
 | Variable          | Default        | Notes                                            |

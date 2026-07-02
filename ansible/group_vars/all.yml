@@ -50,6 +50,24 @@ announce_interval: "300s"               # send period
 ttl: "0s"                               # 0 = consumer default (3 × interval)
 
 # ------------------------------------------------------------
+# SSM data-plane advertisement (BRC-139)
+# ------------------------------------------------------------
+manifest_source_mode: "asm"             # asm | ssm; ssm REQUIRES manifest_publishers to be non-empty
+manifest_publishers: ""                 # comma list of data-plane publisher IPv6 addresses or DNS names (SSM Sources payload)
+manifest_publishers_refresh: "30s"      # DNS re-resolve interval for manifest_publishers entries (>0)
+
+# ------------------------------------------------------------
+# Generation rollover / Successor block (BRC-139 §Successor)
+# Leave manifest_successor_generation_id empty to disable. When set,
+# manifest_successor_transition_epoch is REQUIRED and every other
+# successor_* var takes effect.
+# ------------------------------------------------------------
+manifest_successor_generation_id: ""    # incoming generation 16-byte hex; empty = no Successor block
+manifest_successor_shard_bits: 0        # incoming generation shard_bits (must differ from shard_bits by ±1)
+manifest_successor_source_mode: ""      # incoming generation addressing model: asm | ssm; empty = inherit manifest_source_mode
+manifest_successor_transition_epoch: 0  # Unix seconds at which the successor becomes the sole active generation
+
+# ------------------------------------------------------------
 # Observability
 # ------------------------------------------------------------
 metrics_addr: "[::]:9091"               # /metrics, /healthz, /readyz HTTP listener
