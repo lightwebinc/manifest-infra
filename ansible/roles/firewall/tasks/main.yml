@@ -1,4 +1,13 @@
 ---
+- name: Refuse a world-open perimeter (mgmt_cidrs required)
+  ansible.builtin.assert:
+    that:
+      - (mgmt_cidrs_v4 | length) + (mgmt_cidrs_v6 | length) > 0
+    fail_msg: >-
+      enable_firewall is true but mgmt_cidrs_v4 and mgmt_cidrs_v6 are both
+      empty. Set at least one management CIDR (SSH / metrics allow-list)
+      or disable the firewall role explicitly with enable_firewall=false.
+
 - name: Apply OS-specific firewall ruleset
   ansible.builtin.include_tasks:
     file: "{{ 'freebsd.yml' if ansible_os_family == 'FreeBSD' else 'linux.yml' }}"

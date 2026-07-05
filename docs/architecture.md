@@ -13,7 +13,7 @@ the IPv6 multicast beacon group.
 |                                                            |
 |  +-----------------------+    +-----------------------+    |
 |  | systemd / rc.d        |    | nftables / pf         |    |
-|  | shard-manifest|    | (perimeter firewall)  |    |
+|  | shard-manifest        |    | (perimeter firewall)  |    |
 |  +-----------+-----------+    +-----------------------+    |
 |              |                                             |
 |              | UDP egress (multicast)                      |
@@ -48,7 +48,8 @@ the IPv6 multicast beacon group.
 
 ### `firewall` (optional, default on)
 - Linux: nftables ruleset under `inet shard-manifest` allowing
-  - UDP egress to `ff05::/16`, `ff08::/16`, `ff0e::/16` on the manifest port,
+  - UDP egress to `ff02::/16`, `ff05::/16`, `ff08::/16`, `ff0e::/16` on the
+    manifest port,
   - SSH + Prometheus scrape from `mgmt_cidrs_*`,
   - Standard ICMPv6, NDP, MLD, DHCPv6, DNS, NTP, HTTPS,
   - OTLP gRPC/HTTP egress when `otlp_endpoint` is set.

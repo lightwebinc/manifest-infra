@@ -2,8 +2,8 @@
    Managed by Ansible — do not edit manually.
 
    Perimeter model:
-   * UDP egress to IPv6 multicast scopes (ff05::/16, ff08::/16, ff0e::/16) on
-     {{ manifest_port }} for the announcement traffic.
+   * UDP egress to IPv6 multicast scopes (ff02::/16, ff05::/16, ff08::/16,
+     ff0e::/16) on {{ manifest_port }} for the announcement traffic.
    * TCP ingress for Prometheus metrics scrape from operator CIDRs.
    * SSH ingress from operator CIDRs.
    * Standard ICMPv6 and DHCPv6/SLAAC.
@@ -11,16 +11,23 @@
 #}
 table inet shard-manifest {
 
+    {# An empty mgmt list renders an empty set: that family simply never
+       matches (default-drop). The role asserts that at least one family
+       is non-empty; never fall back to world-open. #}
     set mgmt_v4 {
         type ipv4_addr
         flags interval
-        elements = { {{ mgmt_cidrs_v4 | join(', ') if mgmt_cidrs_v4 | length > 0 else '0.0.0.0/0' }} }
+{% if mgmt_cidrs_v4 | length > 0 %}
+        elements = { {{ mgmt_cidrs_v4 | join(', ') }} }
+{% endif %}
     }
 
     set mgmt_v6 {
         type ipv6_addr
         flags interval
-        elements = { {{ mgmt_cidrs_v6 | join(', ') if mgmt_cidrs_v6 | length > 0 else '::/0' }} }
+{% if mgmt_cidrs_v6 | length > 0 %}
+        elements = { {{ mgmt_cidrs_v6 | join(', ') }} }
+{% endif %}
     }
 
     chain input {
@@ -62,6 +69,7 @@ table inet shard-manifest {
         meta l4proto ipv6-icmp accept
 
         # IPv6 multicast manifest announcements.
+        ip6 daddr ff02::/16 udp dport {{ manifest_port }} accept
         ip6 daddr ff05::/16 udp dport {{ manifest_port }} accept
         ip6 daddr ff08::/16 udp dport {{ manifest_port }} accept
         ip6 daddr ff0e::/16 udp dport {{ manifest_port }} accept

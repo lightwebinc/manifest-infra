@@ -1,24 +1,36 @@
 {# pf anchor ruleset for shard-manifest (FreeBSD)
    Managed by Ansible — do not edit manually.
 #}
-mgmt_v4 = "{ {{ mgmt_cidrs_v4 | join(', ') if mgmt_cidrs_v4 | length > 0 else '0.0.0.0/0' }} }"
-mgmt_v6 = "{ {{ mgmt_cidrs_v6 | join(', ') if mgmt_cidrs_v6 | length > 0 else '::/0' }} }"
+{# An empty mgmt list skips that family's macro and rules entirely
+   (default-block). The role asserts that at least one family is
+   non-empty; never fall back to world-open. #}
+{% if mgmt_cidrs_v4 | length > 0 %}
+mgmt_v4 = "{ {{ mgmt_cidrs_v4 | join(', ') }} }"
+{% endif %}
+{% if mgmt_cidrs_v6 | length > 0 %}
+mgmt_v6 = "{ {{ mgmt_cidrs_v6 | join(', ') }} }"
+{% endif %}
 
 set skip on lo
 
 block all
 
 # State for established sessions.
+{% if mgmt_cidrs_v4 | length > 0 %}
 pass in quick proto tcp from $mgmt_v4 to any port 22 keep state
-pass in quick proto tcp from $mgmt_v6 to any port 22 keep state
 pass in quick proto tcp from $mgmt_v4 to any port {{ metrics_port }} keep state
+{% endif %}
+{% if mgmt_cidrs_v6 | length > 0 %}
+pass in quick proto tcp from $mgmt_v6 to any port 22 keep state
 pass in quick proto tcp from $mgmt_v6 to any port {{ metrics_port }} keep state
+{% endif %}
 
 # ICMP / NDP / MLD.
 pass quick proto icmp keep state
 pass quick proto ipv6-icmp keep state
 
 # UDP egress to IPv6 multicast scopes for the manifest announcement.
+pass out quick inet6 proto udp to ff02::/16 port {{ manifest_port }}
 pass out quick inet6 proto udp to ff05::/16 port {{ manifest_port }}
 pass out quick inet6 proto udp to ff08::/16 port {{ manifest_port }}
 pass out quick inet6 proto udp to ff0e::/16 port {{ manifest_port }}

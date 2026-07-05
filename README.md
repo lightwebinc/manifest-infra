@@ -48,7 +48,7 @@ See [`docs/ansible.md`](docs/ansible.md) for variable reference and
 │   └── roles/
 │       ├── common/                       # base packages + Go toolchain
 │       ├── firewall/                     # nftables (Linux) + pf (FreeBSD)
-│       └── shard-manifest/       # daemon install + systemd / rc.d
+│       └── shard-manifest/               # daemon install + systemd / rc.d
 ├── docs/
 │   ├── architecture.md
 │   ├── ansible.md

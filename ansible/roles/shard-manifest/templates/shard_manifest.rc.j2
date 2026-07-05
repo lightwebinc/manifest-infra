@@ -35,12 +35,13 @@ status_cmd="shard_manifest_status"
 
 shard_manifest_prestart()
 {
+    # Auto-export every variable rendered into the config file so the
+    # export list can never drift from config.env.j2.
     if [ -f "${shard_manifest_config}" ]; then
+        set -a
         . "${shard_manifest_config}"
+        set +a
     fi
-    export SHARD_BITS JOINED_GROUPS BITMAP ROLE_HINT GENERATION_ID AUTHORITATIVE
-    export INSTANCE_ID IFACE PORT MANIFEST_SCOPE MC_GROUP_ID
-    export ANNOUNCE_INTERVAL TTL METRICS_ADDR OTLP_ENDPOINT OTLP_INTERVAL DEBUG
 }
 
 shard_manifest_start()

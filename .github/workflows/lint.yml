@@ -35,7 +35,7 @@ jobs:
         run: pip install ansible-lint>=25.0
       - name: Install Ansible collections
         run: |
-          ansible-galaxy collection install 'community.general>=10.0' 'ansible.posix>=2.0'
+          ansible-galaxy collection install 'community.general>=10.0'
       - name: Run ansible-lint
         run: ansible-lint ansible/
 
@@ -48,7 +48,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y nftables ansible
-          ansible-galaxy collection install community.general ansible.posix
+          ansible-galaxy collection install community.general
       - name: Render template with fixture vars
         run: |
           mkdir -p /tmp/nft-check

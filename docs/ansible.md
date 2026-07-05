@@ -24,7 +24,7 @@ commonly overridden ones are summarised below.
 | Variable        | Default | Notes                                                                |
 | --------------- | ------- | -------------------------------------------------------------------- |
 | `shard_bits`    | `0`     | MUST match the rest of the network. 0..12 per BRC-129.               |
-| `mgmt_cidrs_v4` | `[]`    | SSH + Prometheus scrape allow-list. MUST be non-empty when firewall is on. |
+| `mgmt_cidrs_v4` | `[]`    | SSH + Prometheus scrape allow-list. The play fails when the firewall is on and both `mgmt_cidrs_v4` / `mgmt_cidrs_v6` are empty. |
 | `iface`         | `""`    | Egress interface; SHOULD be set per-host to avoid auto-pick surprises. |
 
 ### Manifest content
@@ -70,6 +70,7 @@ when `manifest_successor_generation_id` is non-empty.
 
 | Variable                              | Default | Notes                                                              |
 | ------------------------------------- | ------- | ------------------------------------------------------------------ |
+| `manifest_pilot_only`                 | `false` | Sets `Flags.PilotOnly`: the manifest describes desired fleet state, not the node's own joins (implies `authoritative`). Set on the pilot node driving a rollover. |
 | `manifest_successor_generation_id`    | `""`    | Incoming generation 16-byte hex; empty = no Successor block.       |
 | `manifest_successor_shard_bits`       | `0`     | Incoming generation shard bits; must differ from `shard_bits` by ±1. |
 | `manifest_successor_source_mode`      | `""`    | Incoming addressing model `asm`/`ssm`; empty = inherit `manifest_source_mode`. |
