@@ -28,7 +28,7 @@ instance_id: ""                         # OTel service.instance.id; empty = host
 joined_groups: ""                       # comma list of indices (hex/dec), or "all", or empty
 manifest_encoding: "auto"               # auto | list | bitmap
 role_hint: "generic"                    # generic | proxy | listener | retry-endpoint | producer | manifest-only
-shard_bits: 0                           # 0..12; MUST match the rest of the network
+shard_bits: 2                           # 0..12; MUST match the rest of the network
 
 # ------------------------------------------------------------
 # Network
