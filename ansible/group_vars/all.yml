@@ -8,7 +8,7 @@
 # shard-manifest source and build
 # ------------------------------------------------------------
 go_install_dir: "/usr/local/go"
-go_version: "1.25.11"                   # Go toolchain (used when building from source)
+go_version: "1.25.12"                   # Go toolchain (used when building from source)
 manifest_bin_dir: "/usr/local/bin"
 manifest_force_build: false             # force rebuild even when binary exists
 manifest_group: "manifest-infra"
@@ -17,7 +17,7 @@ manifest_install_dir: "/opt/shard-manifest"
 # manifest_local_binary: "/path/to/local/shard-manifest"
 manifest_repo: "https://github.com/lightwebinc/shard-manifest.git"
 manifest_user: "manifest-infra"
-manifest_version: "v0.2.3"              # release tag; use "main" only for development
+manifest_version: "v0.3.0"              # release tag; use "main" only for development
 
 # ------------------------------------------------------------
 # Manifest content (BRC-139)
