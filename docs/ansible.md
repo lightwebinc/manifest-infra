@@ -23,7 +23,7 @@ commonly overridden ones are summarised below.
 
 | Variable        | Default | Notes                                                                |
 | --------------- | ------- | -------------------------------------------------------------------- |
-| `shard_bits`    | `0`     | MUST match the rest of the network. 0..12 per BRC-129.               |
+| `shard_bits`    | `2`     | MUST match the rest of the network. 0..12 per BRC-129.               |
 | `mgmt_cidrs_v4` | `[]`    | SSH + Prometheus scrape allow-list. The play fails when the firewall is on and both `mgmt_cidrs_v4` / `mgmt_cidrs_v6` are empty. |
 | `iface`         | `""`    | Egress interface; SHOULD be set per-host to avoid auto-pick surprises. |
 
