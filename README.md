@@ -10,7 +10,7 @@ This repository is the VM-side counterpart to
 (the Kubernetes chart). It contains:
 
 - An **Ansible** playbook + roles to install and configure the daemon on
-  Ubuntu 24.04 / Debian 12 / FreeBSD 14 hosts.
+  Ubuntu 24.04 / Debian 13 / FreeBSD 14 hosts.
 - A perimeter **firewall** role (nftables on Linux, pf on FreeBSD).
 - A **common** role that installs the Go toolchain and base build deps.
 - Documentation under [`docs/`](docs/).
@@ -56,6 +56,7 @@ See [`docs/ansible.md`](docs/ansible.md) for variable reference and
 │   ├── security.md
 │   └── os/
 │       ├── ubuntu-24.04.md
+│       ├── debian-13.md
 │       └── freebsd-14.md
 ├── .github/workflows/lint.yml
 ├── .yamllint.yml
