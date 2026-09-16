@@ -32,7 +32,8 @@ the IPv6 multicast beacon group.
 
 ### `common`
 - Installs Go toolchain (`/usr/local/go`), build dependencies (`build-essential`, `git`, `acl`, `curl`, `tar`, `ca-certificates` on Debian; the FreeBSD equivalents under FreeBSD).
-- Provides an opt-in OS package upgrade task tagged `os_update` (skipped by default).
+- Caps journald and installs a scheduled disk-reclaim timer on Linux hosts (`common_*` defaults; see [ansible.md](ansible.md#common-role)).
+- Provides an opt-in OS package upgrade task tagged `os_update` (skipped by default; Debian family dist-upgrade with reboot, FreeBSD `freebsd-update` + `pkg upgrade` without reboot).
 
 ### `shard-manifest`
 - Creates the `manifest-infra` system user/group.

@@ -15,8 +15,11 @@ Manifest datagrams are sent to one or more of:
 | `global` | `FF0E::B:FFFD`   |
 
 The destination port is `manifest_port` (default `9001`, matching the
-existing beacon listen port). The 16-bit IANA group-id occupying bytes
-[12:14] is `mc_group_id` (default `0x000B`).
+proxy's `MANIFEST_BEACON_PORT` consumer socket). Note that `shard-listener`
+decodes manifests on its beacon socket, bound to its `BEACON_PORT` (default
+`9300`), so set `manifest_port` to the port the intended consumers actually
+receive on. The 16-bit IANA group-id occupying bytes [12:14] is
+`mc_group_id` (default `0x000B`).
 
 The daemon binds the egress socket to the interface named by `iface`; when
 `iface` is empty the first non-loopback interface with a global IPv6

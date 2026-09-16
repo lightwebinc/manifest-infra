@@ -2,7 +2,7 @@
 
 The playbook ships three roles applied to the `manifest_nodes` group:
 
-1. `common` — packages + Go toolchain.
+1. `common` — packages + Go toolchain, journald cap + disk-reclaim timer (Linux), opt-in `--tags os_update` patching.
 2. `shard-manifest` — daemon install, config render, service unit.
 3. `firewall` — perimeter ruleset (Linux nftables, FreeBSD pf).
 
@@ -83,6 +83,30 @@ when `manifest_successor_generation_id` is non-empty.
 | `metrics_addr`    | `[::]:9091`    | HTTP listener.                                   |
 | `metrics_port`    | `9091`         | MUST match `metrics_addr`; used by firewall rules. |
 | `otlp_endpoint`   | `""`           | Optional OTLP gRPC endpoint.                     |
+
+## common role
+
+Besides packages and the Go toolchain, `common` keeps the root filesystem
+bounded on Linux hosts (journald `SystemMaxUse` drop-in plus a
+`node-disk-maintenance.timer` that reclaims the apt cache and stale Go build
+caches) and carries the opt-in patch path: `ansible-playbook site.yml --tags
+os_update` dist-upgrades Debian-family hosts (rebooting when
+`/var/run/reboot-required` appears) and runs `freebsd-update` + `pkg upgrade`
+on FreeBSD (pending reboots are reported, never performed). Knobs live in
+`roles/common/defaults/main.yml`:
+
+| Variable | Default | Effect |
+|----------|---------|--------|
+| `common_disk_maintenance` | `true` | Install the reclaim timer; `false` removes it |
+| `common_disk_maintenance_oncalendar` | `daily` | systemd `OnCalendar` for the timer |
+| `common_disk_maintenance_splay_sec` | `3600` | `RandomizedDelaySec` so nodes do not fire in lockstep |
+| `common_gocache_max_age_days` | `7` | Go build caches touched within this window are kept |
+| `common_journal_max_use` | `300M` | journald `SystemMaxUse` |
+| `common_journal_keep_free` | `1G` | journald `SystemKeepFree` |
+| `common_journal_max_retention` | `2week` | journald `MaxRetentionSec` |
+
+The reclaim script drops a node_exporter textfile under
+`node_exporter_textfile_dir` (default `/var/lib/node_exporter/textfile_collector`).
 
 ## Tags
 
