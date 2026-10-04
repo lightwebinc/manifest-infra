@@ -6,7 +6,7 @@ Deployment automation for [`shard-manifest`](https://github.com/lightwebinc/shar
 nodes — the BRC-139 Shard Manifest Announcement Daemon.
 
 This repository is the VM-side counterpart to
-[`shard-manifest-helm`](https://github.com/lightwebinc/shard-manifest-helm)
+[`charts/shard-manifest`](https://github.com/lightwebinc/charts/tree/main/charts/shard-manifest)
 (the Kubernetes chart). It contains:
 
 - An **Ansible** playbook + roles to install and configure the daemon on
