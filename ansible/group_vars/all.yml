@@ -8,7 +8,7 @@
 # shard-manifest source and build
 # ------------------------------------------------------------
 go_install_dir: "/usr/local/go"
-go_version: "1.27.1"                    # Go toolchain (built from source); must be >=
+go_version: "1.27.2"                    # Go toolchain (built from source); must be >=
                                         # shard-manifest go.mod at manifest_version (v0.4.2: 1.26.2)
 manifest_bin_dir: "/usr/local/bin"
 manifest_force_build: false             # force rebuild even when binary exists
