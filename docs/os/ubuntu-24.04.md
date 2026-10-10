@@ -1,6 +1,8 @@
 # Ubuntu 24.04 deployment notes
 
-`shard-manifest` runs as a stock systemd service under Ubuntu 24.04.
+`shard-manifest` runs as a stock systemd service under Ubuntu 24.04. Packages,
+systemd and nftables conventions shared by all infra repositories are in the
+canonical [Ubuntu 24.04 notes](https://github.com/lightwebinc/bsv-multicast/blob/main/docs/infra/os/ubuntu-24.04.md).
 
 ## Prerequisites
 

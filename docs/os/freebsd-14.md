@@ -1,6 +1,8 @@
 # FreeBSD 14 deployment notes
 
-`shard-manifest` runs as a stock rc.d service under FreeBSD 14.
+`shard-manifest` runs as a stock rc.d service under FreeBSD 14. Packages, rc.d
+and pf conventions shared by all infra repositories are in the canonical
+[FreeBSD 14 notes](https://github.com/lightwebinc/bsv-multicast/blob/main/docs/infra/os/freebsd-14.md).
 
 ## Prerequisites
 

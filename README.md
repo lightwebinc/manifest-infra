@@ -33,8 +33,10 @@ $EDITOR inventory/hosts.yml
 ansible-playbook -i inventory/hosts.yml site.yml
 ```
 
-See [`docs/ansible.md`](docs/ansible.md) for variable reference and
-[`docs/architecture.md`](docs/architecture.md) for the deployment model.
+See [`docs/ansible.md`](docs/ansible.md) for the variable reference,
+[`docs/architecture.md`](docs/architecture.md) for the deployment model, and the
+[shared host-deployment docs](https://github.com/lightwebinc/bsv-multicast/blob/main/docs/infra/README.md) for platforms, Ansible operations
+and OS notes.
 
 ## Layout
 
