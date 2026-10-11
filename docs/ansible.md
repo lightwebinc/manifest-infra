@@ -91,7 +91,7 @@ when `manifest_successor_generation_id` is non-empty.
 |---|---|---|
 | `manifest_publishers` | `""` | Comma list of data-plane publisher IPv6 addresses or DNS names (SSM Sources payload). |
 | `manifest_publishers_refresh` | `30s` | DNS re-resolve interval for `manifest_publishers` entries; must be `> 0`. |
-| `manifest_source_mode` | `asm` | `asm`/`ssm`. `ssm` REQUIRES `manifest_publishers` to be non-empty. |
+| `manifest_source_mode` | `ssm` | Default; `asm` is the lab fallback. `ssm` REQUIRES `manifest_publishers` to be non-empty. |
 
 ### Generation rollover / Successor block (BRC-139 §Successor)
 

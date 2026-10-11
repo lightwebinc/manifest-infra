@@ -50,7 +50,7 @@ ttl: "0s"                               # 0 = consumer default (3 × interval)
 # ------------------------------------------------------------
 manifest_publishers: ""                 # comma list of data-plane publisher IPv6 addresses or DNS names (SSM Sources payload)
 manifest_publishers_refresh: "30s"      # DNS re-resolve interval for manifest_publishers entries (>0)
-manifest_source_mode: "asm"             # asm | ssm; ssm REQUIRES manifest_publishers to be non-empty
+manifest_source_mode: "ssm"             # ssm (default) | asm (lab fallback); ssm REQUIRES manifest_publishers to be non-empty
 
 # ------------------------------------------------------------
 # Generation rollover / Successor block (BRC-139 §Successor)
