@@ -4,7 +4,7 @@
 
 The systemd unit applies:
 
-- `User=` / `Group=` — runs as `manifest-infra` (system user, nologin shell).
+- `User=` / `Group=`: runs as `manifest-infra` (system user, nologin shell).
 - `NoNewPrivileges=true`
 - `PrivateTmp=true`
 - `ProtectSystem=strict`
@@ -30,7 +30,7 @@ The default ruleset:
 - Allows established/related state.
 - Allows SSH (TCP 22) and Prometheus scrape (`metrics_port`, default 9091)
   from `mgmt_cidrs_v4` / `mgmt_cidrs_v6` only. The play fails when
-  `enable_firewall` is true and both lists are empty — the role never
+  `enable_firewall` is true and both lists are empty; the role never
   renders a world-open allow-list.
 - Allows IPv6 multicast egress to `ff02::/16`, `ff05::/16`, `ff08::/16`,
   `ff0e::/16` on `manifest_port` (default 9001).

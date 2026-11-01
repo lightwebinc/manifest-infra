@@ -8,9 +8,9 @@ covers what is specific to `shard-manifest`.
 
 The playbook ships three roles applied to the `manifest_nodes` group:
 
-1. `common` — packages + Go toolchain, journald cap + disk-reclaim timer (Linux), opt-in `--tags os_update` patching.
-2. `shard-manifest` — daemon install, config render, service unit.
-3. `firewall` — perimeter ruleset (Linux nftables, FreeBSD pf).
+1. `common`: packages + Go toolchain, journald cap + disk-reclaim timer (Linux), opt-in `--tags os_update` patching.
+2. `shard-manifest`: daemon install, config render, service unit.
+3. `firewall`: perimeter ruleset (Linux nftables, FreeBSD pf).
 
 Run it with:
 

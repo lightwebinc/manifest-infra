@@ -1,9 +1,9 @@
 # manifest-infra
 
-> Part of the [**BSV Layered Multicast**](https://github.com/lightwebinc/bsv-multicast) open-source project — see the main repository for the full architecture, design docs, and BRC specifications.
+> Part of the [**BSV Layered Multicast**](https://github.com/lightwebinc/bsv-multicast) open-source project; see the main repository for the full architecture, design docs, and BRC specifications.
 
 Deployment automation for [`shard-manifest`](https://github.com/lightwebinc/shard-manifest)
-nodes — the BRC-139 Shard Manifest Announcement Daemon.
+nodes, the BRC-139 Shard Manifest Announcement Daemon.
 
 This repository is the VM-side counterpart to
 [`charts/shard-manifest`](https://github.com/lightwebinc/charts/tree/main/charts/shard-manifest)
