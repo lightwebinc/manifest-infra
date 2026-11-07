@@ -1,72 +1,57 @@
 # manifest-infra
 
+[![Lint](https://github.com/lightwebinc/manifest-infra/actions/workflows/lint.yml/badge.svg)](https://github.com/lightwebinc/manifest-infra/actions/workflows/lint.yml)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+
 > Part of the [**BSV Layered Multicast**](https://github.com/lightwebinc/bsv-multicast) open-source project; see the main repository for the full architecture, design docs, and BRC specifications.
 
-Deployment automation for [`shard-manifest`](https://github.com/lightwebinc/shard-manifest)
-nodes, the BRC-139 Shard Manifest Announcement Daemon.
-
-This repository is the VM-side counterpart to
+Ansible automation for deploying
+[`shard-manifest`](https://github.com/lightwebinc/shard-manifest)
+nodes, the BRC-139 shard manifest announcer. It is the host-deployment
+counterpart of the
 [`charts/shard-manifest`](https://github.com/lightwebinc/charts/tree/main/charts/shard-manifest)
-(the Kubernetes chart). It contains:
+Kubernetes chart.
 
-- An **Ansible** playbook + roles to install and configure the daemon on
-  Ubuntu 24.04 / Debian 13 / FreeBSD 14 hosts.
-- A perimeter **firewall** role (nftables on Linux, pf on FreeBSD).
-- A **common** role that installs the Go toolchain and base build deps.
-- Documentation under [`docs/`](docs/).
+```text
+shard-manifest  ──multicast──▶  FF05::B:FFFD (beacon group)
+(this repo deploys)
+```
 
-No terraform, no BGP, no special networking: the manifest service is a tiny
-stateless emitter and runs anywhere with IPv6 multicast egress.
+No Terraform, no BGP, no special networking: the manifest service is a tiny
+stateless emitter and runs anywhere with IPv6 multicast egress. A perimeter
+firewall role (nftables / pf) is included.
 
-## Quick start
+## Platforms
 
-```bash
-# Install collections.
+Ubuntu 24.04, Debian 13 and FreeBSD 14 via Ansible. See
+[supported platforms](https://github.com/lightwebinc/bsv-multicast/blob/main/docs/infra/platforms.md).
+
+## Quick Start
+
+```sh
 cd ansible
 ansible-galaxy collection install -r requirements.yml
-
-# Copy + edit the example inventory.
 cp inventory/hosts.example.yml inventory/hosts.yml
 $EDITOR inventory/hosts.yml
-
-# Deploy.
 ansible-playbook -i inventory/hosts.yml site.yml
 ```
 
-See [`docs/ansible.md`](docs/ansible.md) for the variable reference,
-[`docs/architecture.md`](docs/architecture.md) for the deployment model, and the
-[shared host-deployment docs](https://github.com/lightwebinc/bsv-multicast/blob/main/docs/infra/README.md) for platforms, Ansible operations
-and OS notes.
+## Documentation
 
-## Layout
+- [Shared host-deployment docs](https://github.com/lightwebinc/bsv-multicast/blob/main/docs/infra/README.md) (platforms, Ansible operations, OS notes)
+- [Architecture](docs/architecture.md)
+- [Ansible usage](docs/ansible.md)
+- [Security (perimeter firewall)](docs/security.md)
+- [Networking](docs/networking.md)
+- OS notes: [Ubuntu 24.04](docs/os/ubuntu-24.04.md), [Debian 13](docs/os/debian-13.md), [FreeBSD 14](docs/os/freebsd-14.md)
 
-```
-.
-├── ansible/
-│   ├── site.yml
-│   ├── requirements.yml
-│   ├── group_vars/all.yml
-│   ├── inventory/hosts.example.yml
-│   └── roles/
-│       ├── common/                       # base packages + Go toolchain
-│       ├── firewall/                     # nftables (Linux) + pf (FreeBSD)
-│       └── shard-manifest/               # daemon install + systemd / rc.d
-├── docs/
-│   ├── architecture.md
-│   ├── ansible.md
-│   ├── networking.md
-│   ├── security.md
-│   └── os/
-│       ├── ubuntu-24.04.md
-│       ├── debian-13.md
-│       └── freebsd-14.md
-├── .github/workflows/lint.yml
-├── .yamllint.yml
-├── .gitignore
-├── LICENSE
-└── README.md
+## Repository Layout
+
+```text
+ansible/     Roles and playbooks
+docs/        Per-topic documentation
 ```
 
 ## License
 
-Apache 2.0. See [LICENSE](LICENSE).
+Apache 2.0; see [LICENSE](LICENSE).
