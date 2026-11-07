@@ -67,7 +67,7 @@ manifest_successor_transition_epoch: 0  # Unix seconds at which the successor be
 # ------------------------------------------------------------
 # Observability
 # ------------------------------------------------------------
-# Unified logging — see https://github.com/lightwebinc/shard-common/blob/main/docs/logging.md
+# Unified logging: see https://github.com/lightwebinc/shard-common/blob/main/docs/logging.md
 log_format: "json"                      # text | json (json default for this daemon)
 log_level: "info"                       # debug|info|warn|error; runtime-togglable via POST /loglevel + SIGHUP
 manifest_debug: false
