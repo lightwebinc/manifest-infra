@@ -17,7 +17,7 @@ manifest_install_dir: "/opt/shard-manifest"
 manifest_local_binary: ""               # pre-built local binary path; skips git/build when set
 manifest_repo: "https://github.com/lightwebinc/shard-manifest.git"
 manifest_user: "manifest-infra"
-manifest_version: "v0.4.3"              # release tag; use "main" only for development
+manifest_version: "v0.4.5"              # release tag; use "main" only for development
 
 # ------------------------------------------------------------
 # Manifest content (BRC-139)
