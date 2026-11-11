@@ -48,7 +48,7 @@ when `manifest_successor_generation_id` is non-empty.
 | `go_install_dir` | `/usr/local/go` | Go toolchain install directory |
 | `go_version` | pinned in `group_vars/all.yml` | Go toolchain; must be at or above the `go` directive in the service go.mod at the pinned tag |
 | `manifest_bin_dir` | `/usr/local/bin` | Binary install directory |
-| `manifest_force_build` | `false` | Rebuild even when a binary already exists (a binary built with another Go release than `go_version` is always rebuilt) |
+| `manifest_force_build` | `false` | Rebuild even when a binary already exists (a source build made with another Go release than `go_version` is rebuilt; a `manifest_local_binary` is installed as supplied) |
 | `manifest_group` | `manifest-infra` | Service group |
 | `manifest_install_dir` | `/opt/shard-manifest` | Clone and build directory |
 | `manifest_local_binary` | `""` | Pre-built local binary to push; empty = clone and build on the host |
