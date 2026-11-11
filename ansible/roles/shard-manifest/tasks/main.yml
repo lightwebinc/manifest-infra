@@ -37,6 +37,8 @@
       git clone {{ manifest_repo | quote }} {{ manifest_install_dir | quote }}
     fi
     cd {{ manifest_install_dir | quote }}
+    # A build records the checked-out commit, so the source it builds must be that commit.
+    git diff --quiet HEAD || { echo "local source changes in {{ manifest_install_dir }}" >&2; exit 1; }
     git fetch --all --tags --prune
     git checkout {{ manifest_version | quote }}
     git pull --ff-only || true
@@ -46,6 +48,14 @@
   changed_when: "'Already up to date' not in manifest_clone.stdout"
   when: manifest_local_binary | default('') | length == 0
 
+# A pushed binary was not built here, so the build record goes first: a stop between the two
+# tasks then leaves no record beside a binary it does not describe.
+- name: Drop the build record for a pushed binary
+  ansible.builtin.file:
+    path: "{{ manifest_install_dir }}/.built-ref"
+    state: absent
+  when: manifest_local_binary | default('') | length > 0
+
 - name: Push pre-built manifest binary (skips git/build)
   ansible.builtin.copy:
     src: "{{ manifest_local_binary }}"
@@ -53,13 +63,6 @@
     owner: "{{ manifest_user }}"
     group: "{{ manifest_group }}"
     mode: "0755"
-  when: manifest_local_binary | default('') | length > 0
-
-# A pushed binary was not built here, so the build record no longer describes it.
-- name: Drop the build record for a pushed binary
-  ansible.builtin.file:
-    path: "{{ manifest_install_dir }}/.built-ref"
-    state: absent
   when: manifest_local_binary | default('') | length > 0
 
 - name: Set ownership of install directory after clone
