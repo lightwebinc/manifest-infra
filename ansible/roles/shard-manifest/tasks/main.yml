@@ -37,6 +37,8 @@
       git clone {{ manifest_repo | quote }} {{ manifest_install_dir | quote }}
     fi
     cd {{ manifest_install_dir | quote }}
+    # A build records the checked-out commit, so the source it builds must be that commit.
+    git diff --quiet HEAD || { echo "local source changes in {{ manifest_install_dir }}" >&2; exit 1; }
     git fetch --all --tags --prune
     git checkout {{ manifest_version | quote }}
     git pull --ff-only || true
@@ -45,6 +47,14 @@
   register: manifest_clone
   changed_when: "'Already up to date' not in manifest_clone.stdout"
   when: manifest_local_binary | default('') | length == 0
+
+# A pushed binary was not built here, so the build record goes first: a stop between the two
+# tasks then leaves no record beside a binary it does not describe.
+- name: Drop the build record for a pushed binary
+  ansible.builtin.file:
+    path: "{{ manifest_install_dir }}/.built-ref"
+    state: absent
+  when: manifest_local_binary | default('') | length > 0
 
 - name: Push pre-built manifest binary (skips git/build)
   ansible.builtin.copy:
@@ -103,6 +113,51 @@
     - manifest_local_binary | default('') | length == 0
     - manifest_binary_stat.stat.exists
 
+# A branch name stays the same while its commit moves, so the record carries both.
+# A dry run leaves the checkout alone: there the commit is the one the clone task predicts.
+- name: Read the checked-out commit
+  ansible.builtin.command:
+    cmd: git rev-parse HEAD
+    chdir: "{{ manifest_install_dir }}"
+  register: manifest_head
+  changed_when: false
+  check_mode: false
+  failed_when: false
+  when: manifest_local_binary | default('') | length == 0
+  tags: [skip_ansible_lint]
+
+- name: Read the release and commit the existing binary was built from
+  ansible.builtin.command: "cat {{ manifest_install_dir }}/.built-ref"
+  register: manifest_built_ref
+  changed_when: false
+  check_mode: false
+  failed_when: false
+  when:
+    - manifest_local_binary | default('') | length == 0
+    - manifest_binary_stat.stat.exists
+
+# A binary built with another Go release, or from another release or commit of
+# the source, is rebuilt: a toolchain move or a version pin move reaches a
+# deployed node without manifest_force_build.
+- name: Decide whether the binary is rebuilt
+  ansible.builtin.set_fact:
+    manifest_rebuild: >-
+      {{ not manifest_binary_stat.stat.exists
+      or (manifest_force_build | default(false) | bool)
+      or (manifest_binary_go.stdout | default('')).split() | last | default('') != 'go' ~ go_version
+      or (manifest_built_ref.stdout | default('')) | trim != manifest_version ~ ' ' ~
+      (manifest_clone.after | default(manifest_head.stdout | default(''), true) | trim) }}
+  when: manifest_local_binary | default('') | length == 0
+
+# Dropped first, so a run that stops between the build and the record rebuilds next time.
+- name: Drop the build record before a rebuild
+  ansible.builtin.file:
+    path: "{{ manifest_install_dir }}/.built-ref"
+    state: absent
+  when:
+    - manifest_local_binary | default('') | length == 0
+    - manifest_rebuild | bool
+
 - name: Build shard-manifest binary
   ansible.builtin.command:
     # Folded scalar: the one-line form ran past the 160-char lint limit. Folding
@@ -124,12 +179,16 @@
   changed_when: true
   when:
     - manifest_local_binary | default('') | length == 0
-    # A binary built with another Go release is rebuilt, so a toolchain move
-    # reaches a deployed node without manifest_force_build.
-    - >-
-      not manifest_binary_stat.stat.exists
-      or (manifest_force_build | default(false) | bool)
-      or (manifest_binary_go.stdout | default('')).split() | last | default('') != 'go' ~ go_version
+    - manifest_rebuild | bool
+
+- name: Record the release and commit the binary was built from
+  ansible.builtin.copy:
+    content: "{{ manifest_version }} {{ manifest_clone.after | default(manifest_head.stdout | default(''), true) | trim }}\n"
+    dest: "{{ manifest_install_dir }}/.built-ref"
+    owner: "{{ manifest_user }}"
+    group: "{{ manifest_group }}"
+    mode: "0644"
+  when: manifest_local_binary | default('') | length == 0
 
 - name: Set ownership on built/pushed binary
   ansible.builtin.file:
