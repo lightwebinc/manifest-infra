@@ -60,7 +60,7 @@ manifest_source_mode: "ssm"             # ssm (default) | asm (lab fallback); ss
 # ------------------------------------------------------------
 manifest_pilot_only: false              # set Flags.PilotOnly: manifest describes desired fleet state, not own joins (implies authoritative)
 manifest_successor_generation_id: ""    # incoming generation 16-byte hex; empty = no Successor block
-manifest_successor_shard_bits: 0        # incoming generation shard_bits (must differ from shard_bits by ±1)
+manifest_successor_shard_bits: 0        # incoming generation shard_bits (within ±1 of shard_bits; equal is allowed)
 manifest_successor_source_mode: ""      # incoming generation addressing model: asm | ssm; empty = inherit manifest_source_mode
 manifest_successor_transition_epoch: 0  # Unix seconds at which the successor becomes the sole active generation
 
