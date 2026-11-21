@@ -9,7 +9,7 @@
 # ------------------------------------------------------------
 go_install_dir: "/usr/local/go"
 go_version: "1.27.4"                    # Go toolchain (built from source); must be >=
-                                        # shard-manifest go.mod at manifest_version (v0.4.5: 1.26.2)
+                                        # shard-manifest go.mod at manifest_version (v0.4.7: 1.26.2)
 manifest_bin_dir: "/usr/local/bin"
 manifest_force_build: false             # force rebuild even when binary exists
 manifest_group: "manifest-infra"
@@ -17,7 +17,7 @@ manifest_install_dir: "/opt/shard-manifest"
 manifest_local_binary: ""               # pre-built local binary path; skips git/build when set
 manifest_repo: "https://github.com/lightwebinc/shard-manifest.git"
 manifest_user: "manifest-infra"
-manifest_version: "v0.4.5"              # release tag; use "main" only for development
+manifest_version: "v0.4.7"              # release tag; use "main" only for development
 
 # ------------------------------------------------------------
 # Manifest content (BRC-139)
@@ -60,7 +60,7 @@ manifest_source_mode: "ssm"             # ssm (default) | asm (lab fallback); ss
 # ------------------------------------------------------------
 manifest_pilot_only: false              # set Flags.PilotOnly: manifest describes desired fleet state, not own joins (implies authoritative)
 manifest_successor_generation_id: ""    # incoming generation 16-byte hex; empty = no Successor block
-manifest_successor_shard_bits: 0        # incoming generation shard_bits (must differ from shard_bits by ±1)
+manifest_successor_shard_bits: 0        # incoming generation shard_bits (within ±1 of shard_bits; equal is allowed)
 manifest_successor_source_mode: ""      # incoming generation addressing model: asm | ssm; empty = inherit manifest_source_mode
 manifest_successor_transition_epoch: 0  # Unix seconds at which the successor becomes the sole active generation
 

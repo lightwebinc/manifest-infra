@@ -37,8 +37,8 @@ set per deployment.
 
 Generation rollover: leave `manifest_successor_generation_id` empty to disable. When set,
 `manifest_successor_transition_epoch` is REQUIRED and must be at least
-`now + 2 × announce_interval`. `manifest_successor_shard_bits` must differ from
-`shard_bits` by ±1. The successor env vars are only rendered into `config.env`
+`now + 2 × announce_interval`. `manifest_successor_shard_bits` must be within ±1
+of `shard_bits` (equal is allowed). The successor env vars are only rendered into `config.env`
 when `manifest_successor_generation_id` is non-empty.
 
 ### shard-manifest source and build
@@ -99,7 +99,7 @@ when `manifest_successor_generation_id` is non-empty.
 |---|---|---|
 | `manifest_pilot_only` | `false` | Sets `Flags.PilotOnly`: the manifest describes desired fleet state, not the node's own joins (implies `authoritative`). Set on the pilot node driving a rollover. |
 | `manifest_successor_generation_id` | `""` | Incoming generation 16-byte hex; empty = no Successor block. |
-| `manifest_successor_shard_bits` | `0` | Incoming generation shard bits; must differ from `shard_bits` by ±1. |
+| `manifest_successor_shard_bits` | `0` | Incoming generation shard bits; within ±1 of `shard_bits` (equal is allowed). |
 | `manifest_successor_source_mode` | `""` | Incoming addressing model `asm`/`ssm`; empty = inherit `manifest_source_mode`. |
 | `manifest_successor_transition_epoch` | `0` | Unix seconds at which the successor becomes the sole active generation. |
 
